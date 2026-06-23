@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FontBridge</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <main class="popup-shell" aria-live="polite">
+      <section class="hero-card">
+        <div>
+          <p class="eyebrow">FontBridge</p>
+          <h1>Multi-font web override</h1>
+          <p class="muted">Switch the web to bundled or local fonts without losing weight hierarchy.</p>
+        </div>
+
+        <label class="switch" title="Enable or disable FontBridge globally">
+          <input id="globalToggle" type="checkbox" aria-label="Enable FontBridge">
+          <span></span>
+        </label>
+      </section>
+
+      <section class="card site-card">
+        <div>
+          <span class="label">Current site</span>
+          <strong id="hostname">Detecting...</strong>
+        </div>
+        <span id="siteStatus" class="pill">Checking</span>
+      </section>
+
+      <section class="card toolbar-card">
+        <label class="field">
+          <span>Search fonts</span>
+          <input id="fontSearch" type="search" placeholder="Inter, JetBrains Mono, Literata">
+        </label>
+
+        <div class="filter-row" id="categoryFilters" role="tablist" aria-label="Font category filters">
+          <button type="button" class="filter-chip is-active" data-category="all">All</button>
+          <button type="button" class="filter-chip" data-category="sans">Sans</button>
+          <button type="button" class="filter-chip" data-category="serif">Serif</button>
+          <button type="button" class="filter-chip" data-category="mono">Mono</button>
+          <button type="button" class="filter-chip" data-category="display">Display</button>
+          <button type="button" class="filter-chip" data-category="system">System</button>
+        </div>
+      </section>
+
+      <section class="card selected-card">
+        <div class="selected-head">
+          <span class="label">Selected font</span>
+          <span id="selectedFontStatus" class="mini-badge">Bundled</span>
+        </div>
+
+        <strong id="selectedFontName">Inter</strong>
+        <p id="selectedFontMeta" class="selected-meta">Sans · Bundled</p>
+        <p id="selectedFontHint" class="muted"></p>
+      </section>
+
+      <section class="card list-card">
+        <div class="list-head">
+          <span class="label">Font profiles</span>
+          <span id="fontCount" class="count-label">0</span>
+        </div>
+
+        <div id="fontList" class="font-list" role="listbox" aria-label="Selectable font profiles"></div>
+      </section>
+
+      <section class="card settings-card">
+        <label class="toggle-row">
+          <span>
+            <strong>Preserve monospace</strong>
+            <small>Keep code blocks and text inputs on their monospace stack.</small>
+          </span>
+          <input id="preserveMonospace" type="checkbox">
+        </label>
+
+        <label class="toggle-row">
+          <span>
+            <strong>Force monospace too</strong>
+            <small>Apply the selected font to code blocks and text inputs as well.</small>
+          </span>
+          <input id="forceMonospaceToo" type="checkbox">
+        </label>
+
+        <label class="toggle-row">
+          <span>
+            <strong>Force shadow DOM</strong>
+            <small>Try injecting styles into open shadow roots for component-heavy sites.</small>
+          </span>
+          <input id="forceShadowDom" type="checkbox">
+        </label>
+      </section>
+
+      <section class="card custom-card">
+        <div class="list-head">
+          <span class="label">Custom system profile</span>
+          <span class="count-label">Local only</span>
+        </div>
+
+        <label class="field">
+          <span>Display name</span>
+          <input id="customName" type="text" placeholder="My Work Sans">
+        </label>
+
+        <label class="field">
+          <span>Font-family name</span>
+          <input id="customFamily" type="text" placeholder="Work Sans">
+        </label>
+
+        <label class="field">
+          <span>Category</span>
+          <select id="customCategory">
+            <option value="sans">Sans</option>
+            <option value="serif">Serif</option>
+            <option value="mono">Mono</option>
+            <option value="display">Display</option>
+            <option value="system">System</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Fallback stack</span>
+          <input id="customFallback" type="text" spellcheck="false">
+        </label>
+
+        <button id="saveCustomProfileButton" class="secondary" type="button">Save custom font profile</button>
+      </section>
+
+      <section class="actions">
+        <button id="applyButton" class="primary" type="button">Apply to all sites</button>
+        <button id="disableSiteButton" class="danger" type="button">Disable on this site</button>
+        <button id="resetSiteButton" type="button">Reset current site</button>
+      </section>
+
+      <p id="message" class="message" role="status"></p>
+    </main>
+
+    <script src="font-registry.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>
