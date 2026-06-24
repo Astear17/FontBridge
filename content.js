@@ -355,10 +355,18 @@
 
   function buildDocumentCss(font, nextSettings) {
     const fontStack = buildFontStack(font);
-    const protectedSelector = buildProtectedSelector(nextSettings);
+    const monoCompanion = !nextSettings.preserveMonospace
+      ? findMonoCompanion(font.id, nextSettings.customProfiles)
+      : null;
+
+    const protectedSelectors = (nextSettings.preserveMonospace || monoCompanion)
+      ? ICON_EXCLUSIONS.concat(MONOSPACE_EXCLUSIONS)
+      : ICON_EXCLUSIONS;
+
+    const protectedSelector = `:where(${protectedSelectors.join(", ")})`;
     const target = `body *:not(${protectedSelector})`;
 
-    return [
+    const parts = [
       buildFontFaces(font),
       `:root { --fontbridge-font-stack: ${fontStack}; }`,
       [
@@ -369,17 +377,36 @@
         `${target}::after`
       ].join(",\n") +
         "\n{\n  font-family: var(--fontbridge-font-stack) !important;\n}"
-    ]
-      .filter(Boolean)
-      .join("\n\n");
+    ];
+
+    if (!nextSettings.preserveMonospace && monoCompanion) {
+      const monoFaces = buildFontFaces(monoCompanion);
+      if (monoFaces) {
+        parts.splice(1, 0, monoFaces);
+      }
+      const monoSelector = `:where(${MONOSPACE_EXCLUSIONS.join(", ")})`;
+      parts.push(
+        `${monoSelector}\n{\n  font-family: ${buildFontStack(monoCompanion)} !important;\n}`
+      );
+    }
+
+    return parts.filter(Boolean).join("\n\n");
   }
 
   function buildShadowCss(font, nextSettings) {
     const fontStack = buildFontStack(font);
-    const protectedSelector = buildProtectedSelector(nextSettings);
+    const monoCompanion = !nextSettings.preserveMonospace
+      ? findMonoCompanion(font.id, nextSettings.customProfiles)
+      : null;
+
+    const protectedSelectors = (nextSettings.preserveMonospace || monoCompanion)
+      ? ICON_EXCLUSIONS.concat(MONOSPACE_EXCLUSIONS)
+      : ICON_EXCLUSIONS;
+
+    const protectedSelector = `:where(${protectedSelectors.join(", ")})`;
     const target = `*:not(${protectedSelector})`;
 
-    return [
+    const parts = [
       `:host { --fontbridge-font-stack: ${fontStack}; }`,
       [
         ":host",
@@ -388,15 +415,16 @@
         `${target}::after`
       ].join(",\n") +
         "\n{\n  font-family: var(--fontbridge-font-stack) !important;\n}"
-    ].join("\n\n");
-  }
+    ];
 
-  function buildProtectedSelector(nextSettings) {
-    const selectors = nextSettings.preserveMonospace
-      ? ICON_EXCLUSIONS.concat(MONOSPACE_EXCLUSIONS)
-      : ICON_EXCLUSIONS;
+    if (!nextSettings.preserveMonospace && monoCompanion) {
+      const monoSelector = `:where(${MONOSPACE_EXCLUSIONS.join(", ")})`;
+      parts.push(
+        `${monoSelector}\n{\n  font-family: ${buildFontStack(monoCompanion)} !important;\n}`
+      );
+    }
 
-    return `:where(${selectors.join(", ")})`;
+    return parts.filter(Boolean).join("\n\n");
   }
 
   function buildFontStack(font) {

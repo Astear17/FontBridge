@@ -119,6 +119,17 @@
     { id: "rubik", name: "Rubik", category: "display", packageName: "@fontsource/rubik" }
   ];
 
+  const MONO_COMPANION_MAP = Object.freeze({
+    "geist-sans": "geist-mono",
+    "ibm-plex-sans": "ibm-plex-mono",
+    "ibm-plex-serif": "ibm-plex-mono",
+    "roboto": "roboto-mono",
+    "source-sans-3": "source-code-pro",
+    "source-serif-4": "source-code-pro",
+    "space-grotesk": "space-mono",
+    "sf-pro": "sf-mono"
+  });
+
   const LICENSE_REVIEW_CANDIDATES = [
     {
       id: "satoshi",
@@ -436,15 +447,26 @@
     return profiles.find((entry) => entry.id === fontId) || FONT_REGISTRY_BY_ID.inter || profiles[0];
   }
 
+  function findMonoCompanion(fontId, customProfiles) {
+    const companionId = MONO_COMPANION_MAP[fontId];
+    if (!companionId) {
+      return null;
+    }
+    const profiles = mergeFontBridgeProfiles(customProfiles);
+    return profiles.find((entry) => entry.id === companionId) || null;
+  }
+
   const api = {
     FONTBRIDGE_STORAGE_KEY,
     FONTBRIDGE_FALLBACKS,
     FONTBRIDGE_DEFAULT_SETTINGS,
     FONT_REGISTRY,
     FONT_REGISTRY_BY_ID,
+    MONO_COMPANION_MAP,
     WEIGHT_LABELS,
     buildWeightMap,
     createFontBridgeCustomProfile,
+    findMonoCompanion,
     getFontBridgeFallback,
     getFontBridgeProfileById,
     mergeFontBridgeProfiles,
